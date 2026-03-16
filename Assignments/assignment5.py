@@ -96,12 +96,18 @@ def drawRotationAxis():
 # Q1:
 def spinningTransform():
     #TODO: Write your code below and call the function in main()
+    glTranslatef(7, 7, 7)
+    glRotatef(1, 0.0, 1.0, 0.0)
+    glTranslatef(-7, -7, -7)
 
     return
 
 # Q2:
 def scaleByHalf():
     #TODO: Write your code below and call the function in main()
+    glTranslatef(7, 7, 7)
+    glScalef(0.5, 0.5, 0.5)
+    glTranslatef(-7, -7, -7)
 
     return
 
@@ -111,7 +117,7 @@ def main():
 
     screen = (width, height)                                                # specify the screen size of the new program window
     display_surface = pygame.display.set_mode(screen, DOUBLEBUF | OPENGL)   # create a display of size 'screen', use double-buffers and OpenGL
-    pygame.display.set_caption('CPSC 360 - YOUR NAME')                      # set title of the program window
+    pygame.display.set_caption('CPSC 360 - Jun yi')                      # set title of the program window
 
     glEnable(GL_DEPTH_TEST)
     glMatrixMode(GL_PROJECTION)                                             # set mode to projection transformation
@@ -121,12 +127,14 @@ def main():
     glMatrixMode(GL_MODELVIEW)                                              # set mode to modelview (geometric + view transf)
     gluLookAt(20, 20, 50, 0, 0, -1, 0, 1, 0)
     initmodelMatrix = glGetFloat(GL_MODELVIEW_MATRIX)
+    scaleByHalf()
 
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-
+                
+        spinningTransform()
         draw() # function to draw the object
 
         # below are the code irrelevant to the assignment
