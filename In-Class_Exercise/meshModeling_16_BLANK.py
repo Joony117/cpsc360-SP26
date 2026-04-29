@@ -65,8 +65,8 @@ def draw_edges():
 
 
 def draw_triangles():                                                       
-    #glEnable(GL_CULL_FACE)                                                # enable front/back face culling
-    #glCullFace(GL_BACK)                                                   # specify which face NOT drawing (culling)
+    glEnable(GL_CULL_FACE)                                                # enable front/back face culling
+    glCullFace(GL_BACK)                                                   # specify which face NOT drawing (culling)
     colors = ((1.0,0.0,0.0),(0.0,1.0,0.0),(0.0,0.0,1.0))                   # [red, green, blue]
     tri_idx = 0
     glBegin(GL_TRIANGLES)
@@ -79,7 +79,9 @@ def draw_triangles():
 
 def draw_triangleStrips():
     glColor3f(0.0, 1.0, 0.0)
-    triangle_strip = [] #TODO: Fill this up to draw triangle strips
+    glEnable(GL_CULL_FACE)                                                # enable front/back face culling
+    glCullFace(GL_BACK)  
+    triangle_strip = [4,3,2,1,0] #TODO: Fill this up to draw triangle strips
 
     # create a list of colors for all the vertices in 'vertices'
     colors = ((1.0,0.0,0.0), # red
@@ -116,22 +118,39 @@ def exercise0_IndexedTriangles():
     glEnable(GL_CULL_FACE)                                                # enable front/back face culling
     glCullFace(GL_BACK)                                                   # specify which face NOT drawing (culling)
     colors = ((1.0,0.0,0.0),(0.0,1.0,0.0),(0.0,0.0,1.0),(1.0,1.0,0.0))    # [red, green, blue, yellow]
+    tri_idx = 0
+    
     # TODO: Fill up the vertex array (a list of lists),
     #           & using the given vertices in the order of: a, b, c, d, e, f
     vertices_e0 = [
-
+        [0,0,0],
+        [5,-2,0],
+        [0,5,0],
+        [5,2,0],
+        [-1,10,0],
+        [5,7,0]
+        
     ]
 
     # TODO: Fill up the face array (a list of lists) using triangles 
     #           in an arbitrary order, with each triangle represented by 
     #               three vertex indices from the vertex array and in CCW
     faces_e0 = [
-
+        [0,1,3],
+        [0,3,2],
+        [2,3,5],
+        [2,5,4]
+        
     ]
 
     # TODO: Complete the code below to draw the mesh (refer to `draw_triangles()`)
     #           but using data stored in `vertices_e0` and `faces_e0`
     glBegin(GL_TRIANGLES)
+    for triangles in faces_e0:
+        glColor3fv(colors[tri_idx])
+        for vertex in triangles:
+            glVertex3fv(vertices_e0[vertex])
+        tri_idx += 1
 
     glEnd()
 
@@ -139,25 +158,50 @@ def exercise0_IndexedTriangles():
 def exercise1_TriangleStrips():
     # TODO: create a vertex array (a list of lists)
     vertices_e1 = [
+        [0,0,0],    #a 0
+        [5,-2,0],   #b 1
+        [0,5,0],    #c 2
+        [5,2,0],    #d 3
+        [-1,10,0],  #e 4
+        [5,7,0]     #f 5
 
     ]
 
     # TODO: fill up the list triangle strip (a list)
-    triangleStrip_e1 = []
+    triangleStrip_e1 = [1,0,3,2,5,4]
 
     # TODO: draw triangle strips first using glBegin(GL_TRIANGLE_STRIP)-glEnd()
         # all triangle are in blue, first specify the triangle color as BLUE using glColor3f()
+    glBegin(GL_TRIANGLE_STRIP)
+    glColor3f(0,0,1)
+    
+    for vertex in triangleStrip_e1:
+        glVertex3fv(vertices_e1[vertex])
 
-
-
+    glEnd()
     # TODO: fill up the list for all the 9 edges (a list of lists)
     edges_e1 = [
-
+        [0,1],
+        [0,3],
+        [2,3],
+        [2,5],
+        [4,5],
+        [1,3],
+        [0,2],
+        [3,5],
+        [2,4]
     ]
 
     # TODO: draw triangle edges at last using glBegin(GL_LINES)-glEnd()
         # specify the edge color using glColor3f() with (1.0, 1.0. 1.0) indicating white color
         # specify the line width using glLineWidth() with 3.0 as length width
+    glColor3f(1.0, 1.0, 1.0)
+    glLineWidth(3.0)
+    glBegin(GL_LINES)
+    for edge in edges_e1:
+        for vertex in edge:
+            glVertex3fv(vertices_e1[vertex])
+    glEnd()
 
 
     return
@@ -166,37 +210,55 @@ def exercise1_TriangleStrips():
 def exercise2_TriangleFans():
     # TODO: create a vertex array (a list of lists)
     vertices_e2 = [
-
+        [0,0,0],     #a 0
+        [5,0,5],     #b 1
+        [10,0,0],    #c 2
+        [5,10,0],    #d 3
     ]
 
     # TODO: fill up the list for the triangle strip (a list)
-    triangleFan_e2 = []
+    triangleFan_e2 = [3,0,1,2,0]
 
     # TODO: fill up the colors for vertices a, b, c, d: red, yellow, green, blue
         # a tuple of tuples: ((), (), ...)
     colors_e2 = (
-
+            (1.0,0.0,0.0),
+            (0.0,1.0,1.0),
+            (0.0,1.0,0.0),
+            (0.0,0.0,1.0)
     ) 
-
 
     # TODO: draw triangle fan first using glBegin(GL_TRIANGLE_FAN)-glEnd()
         # assign each vertex color in the for loop
-
+    glBegin(GL_TRIANGLE_FAN)
+    for vertex in triangleFan_e2:
+        glColor3fv(colors_e2[vertex])
+        glVertex3fv(vertices_e2[vertex])
+    glEnd()
 
 
     # TODO: fill up the list for all the 6 edges (a list of lists)
     edges_e2 = [
-  
+        [0,1],
+        [0,2],
+        [0,3],
+        [1,2],
+        [2,3],
+        [3,1]
     ]
 
     # TODO: draw triangle edges at last using glBegin(GL_LINES)-glEnd()
         # specify the edge color using glColor3f() with (1.0, 1.0. 1.0) indicating white color
         # specify the line width using glLineWidth() with 3.0 as length width
-
+    glColor3f(1.0, 1.0, 1.0)
+    glLineWidth(3.0)
+    glBegin(GL_LINES)
+    for edge in edges_e2:
+        for vertex in edge:
+            glVertex3fv(vertices_e2[vertex])
+    glEnd()
 
     return
-
-
 
 def draw():
     glClearColor(0, 0, 0, 1)                                                # set background RGBA color 
@@ -215,7 +277,7 @@ def draw():
     #draw_edges()
     
     # draw vertices
-    draw_vertices()
+    #draw_vertices()
 
     # TODO: Exercise 0: Draw Triangles using indexed triangles
         # please commend out all the above functions first
@@ -227,7 +289,7 @@ def draw():
 
     # TODO: Exercise 2: Draw Triangle Fans
         # please commend out all the above functions first
-    #exercise2_TriangleFans()
+    exercise2_TriangleFans()
 
 
 def main():
