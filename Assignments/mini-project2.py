@@ -8,7 +8,24 @@ from OpenGL.GLU import *
 import math
 
 width, height = 800, 600                                                    # width and height of the screen created
-whichQuestion = 1                                                           # 1: run Q1; 2: run Q2; 3: run Q3; 4: run Q4
+whichQuestion = 4                                                           # 1: run Q1; 2: run Q2; 3: run Q3; 4: run Q4
+
+# Q1 pan
+eye_x = 0.0
+eye_y = 0.0
+
+# Q2 side views (front is default)
+view_eye = (0, 0, 50)
+view_up = (0, 1, 0)
+
+# Q3 gaze tilt
+look_x = 0.0
+look_y = 0.0
+
+# Q4 orbit
+cam_angle = 0.0
+rot_radius = 50.0
+cam_y = 5.0
 
 def drawAxes():                                                             # draw x-axis and y-axis
     glLineWidth(3.0)                                                        # specify line size (1.0 default)
@@ -91,13 +108,19 @@ def main():
 
     screen = (width, height)                                                # specify the screen size of the new program window
     display_surface = pygame.display.set_mode(screen, DOUBLEBUF | OPENGL)   # create a display of size 'screen', use double-buffers and OpenGL
-    pygame.display.set_caption('CPSC 360 - Your Name')                      # set title of the program window
+    pygame.display.set_caption('CPSC 360 - jun yi')                      # set title of the program window
+
+    global eye_x, eye_y, view_eye, view_up, look_x, look_y, cam_angle, rot_radius, cam_y
 
     glEnable(GL_DEPTH_TEST)
     glViewport(0, 0, width, height)
     glMatrixMode(GL_PROJECTION)                                             # set mode to projection transformation
     glLoadIdentity()                                                        # reset transf matrix to an identity
-    glOrtho(-40, 40, -30, 30, 40, 60)                                       # specify an orthogonal-projection view volume
+    # Q3/Q4 need perspective; Q1/Q2 keep ortho
+    if whichQuestion <= 2:
+        glOrtho(-50, 50, -40, 40, 1, 200)
+    else:
+        gluPerspective(45, width / height, 1, 200)
 
     glMatrixMode(GL_MODELVIEW)                                              # set mode to modelview (geometric + view transf)
     initmodelMatrix = glGetFloat(GL_MODELVIEW_MATRIX)
@@ -124,6 +147,56 @@ def main():
                 if event.key == pygame.K_0: # '0'
                     bResetModelMatrix = True
 
+                if whichQuestion == 1:
+                    if event.key == pygame.K_LEFT:
+                        eye_x -= 2
+                    elif event.key == pygame.K_RIGHT:
+                        eye_x += 2
+                    elif event.key == pygame.K_UP:
+                        eye_y += 2
+                    elif event.key == pygame.K_DOWN:
+                        eye_y -= 2
+
+                elif whichQuestion == 2:
+                    if event.key == pygame.K_a:
+                        view_eye = (-50, 0, 0)
+                        view_up = (0, 1, 0)
+                    elif event.key == pygame.K_d:
+                        view_eye = (50, 0, 0)
+                        view_up = (0, 1, 0)
+                    elif event.key == pygame.K_s:
+                        view_eye = (0, 0, 50)
+                        view_up = (0, 1, 0)
+                    elif event.key == pygame.K_w:
+                        view_eye = (0, 0, -50)
+                        view_up = (0, 1, 0)
+                    elif event.key == pygame.K_q:
+                        view_eye = (0, 50, 0)
+                        view_up = (0, 0, 1)
+                    elif event.key == pygame.K_e:
+                        view_eye = (0, -50, 0)
+                        view_up = (0, 0, 1)
+
+                elif whichQuestion == 3:
+                    if event.key == pygame.K_LEFT:
+                        look_x = max(-25, look_x - 3)
+                    elif event.key == pygame.K_RIGHT:
+                        look_x = min(25, look_x + 3)
+                    elif event.key == pygame.K_UP:
+                        look_y = min(25, look_y + 3)
+                    elif event.key == pygame.K_DOWN:
+                        look_y = max(-25, look_y - 3)
+
+                elif whichQuestion == 4:
+                    if event.key == pygame.K_RIGHT:
+                        rot_radius = min(80, rot_radius + 2)
+                    elif event.key == pygame.K_LEFT:
+                        rot_radius = max(25, rot_radius - 2)
+                    elif event.key == pygame.K_UP:
+                        cam_y = min(60, cam_y + 2)
+                    elif event.key == pygame.K_DOWN:
+                        cam_y = max(-10, cam_y - 2)
+
         # obtain the current model-view matrix after mouse rotation (if any)
         curmodelMatrix = glGetFloat(GL_MODELVIEW_MATRIX)
 
@@ -137,16 +210,32 @@ def main():
 
         #TODO: Q1: Modify the below gluLookAt()
         if whichQuestion == 1:
-            gluLookAt(0, 0, 50, 0, 0, 0, 0, 1, 0)
+            gluLookAt(eye_x, eye_y, 50, 
+                      eye_x, eye_y, 0, 
+                      0, 1, 0)
         #TODO: Q2: Modify the below gluLookAt()
         elif whichQuestion == 2:
-            gluLookAt(0, 0, 50, 0, 0, 0, 0, 1, 0)
+            gluLookAt(view_eye[0], view_eye[1], view_eye[2],
+                      0, 0, 0,
+                      view_up[0], view_up[1], view_up[2])
         #TODO: Extra-Credit Q3: Modify the below gluLookAt()
         elif whichQuestion == 3:
-            gluLookAt(0, 0, 50, 0, 0, 0, 0, 1, 0)
+            gluLookAt(0, 0, 50,
+                      look_x, look_y, 0, 
+                      0, 1, 0)
+            
         #TODO: Extra-Credit Q4: Modify the below gluLookAt()
         elif whichQuestion == 4:
-            gluLookAt(0, 0, 50, 0, 0, 0, 0, 1, 0)
+            cam_angle += 0.5
+            orbit_angle_rad = math.radians(cam_angle)
+            
+            cam_x = rot_radius * math.sin(orbit_angle_rad)
+            cam_z = rot_radius * math.cos(orbit_angle_rad)
+            
+            # keep lookat y equal to camera y so the gaze stays level
+            gluLookAt(cam_x, cam_y, cam_z, 
+                      0, cam_y, 0, 
+                      0, 1, 0)
 
         glPushMatrix()
         glMultMatrixf(curmodelMatrix) # multiply with the m-v matrix after mouse rotation

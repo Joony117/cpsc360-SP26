@@ -26,32 +26,79 @@ def draw_cube():
     # TODO: Construct the cube using an Indexed Triangles mesh representation
     # 8 vertices
     vertices = [ 
+        [-10.0, -10.0,  10.0],  # v0  front-bottom-left
+        [-10.0, -10.0, -10.0],  # v1  back-bottom-left
+        [ 10.0, -10.0, -10.0],  # v2  back-bottom-right
+        [ 10.0, -10.0,  10.0],  # v3  front-bottom-right
+        [-10.0,  10.0, -10.0],  # v4  back-top-left
+        [-10.0,  10.0,  10.0],  # v5  front-top-left
+        [ 10.0,  10.0,  10.0],  # v6  front-top-right
+        [ 10.0,  10.0, -10.0],  # v7  back-top-right
 
     ]
 
     # 12 triangles
     triangles = [
-
+        # Front face, BLUE
+        [0, 3, 6],
+        [0, 6, 5],
+        # Back face, BLUE
+        [2, 1, 4],
+        [2, 4, 7],
+        # Left face RED
+        [1, 0, 5],
+        [1, 5, 4],
+        # Right face RED
+        [3, 2, 7],
+        [3, 7, 6],
+        # Top face GREEN 
+        [6, 4, 5],
+        [4, 6, 7],
+        # Bottom face GREEN 
+        [0, 1, 2],
+        [0, 2, 3],
     ]
     
     # 12 edges
-    edges = [
-
+    edges = [  
+        # Bottom square
+        [0, 1], [1, 2], [2, 3], [3, 0],
+        # Top square
+        [4, 5], [5, 6], [6, 7], [7, 4],
+        # sides
+        [0, 5], [1, 4], [2, 7], [3, 6],
+    ]
+    
+    # resotre the colors for all the faces in a list of tuples: [(r, g, b), (), ...]
+    colors = [
+        (0.0, 0.0, 1.0), (0.0, 0.0, 1.0),  # front  blue
+        (0.0, 0.0, 1.0), (0.0, 0.0, 1.0),  # back   blue
+        (1.0, 0.0, 0.0), (1.0, 0.0, 0.0),  # left   red
+        (1.0, 0.0, 0.0), (1.0, 0.0, 0.0),  # right  red
+        (0.0, 1.0, 0.0), (0.0, 1.0, 0.0),  # top    green
+        (0.0, 1.0, 0.0), (0.0, 1.0, 0.0),  # bottom green
     ]
     
     # TODO: draw all the 12 triangles using GL_TRIANGLES
-    # resotre the colors for all the faces in a list of tuples: [(r, g, b), (), ...]
-    colors = [
-
-    ]
- 
-
-
+    tri_idx = 0
+    glBegin(GL_TRIANGLES)
+    for triangle in triangles:
+        glColor3fv(colors[tri_idx])
+        for vertex in triangle:
+            glVertex3fv(vertices[vertex])
+        tri_idx += 1
+    glEnd()
+    
+    
     # TODO: draw all the 12 edges in white with a line width of 5 using GL_LINES
-
-
-
-
+    glColor3f(1.0, 1.0, 1.0)
+    glLineWidth(5.0)
+    glBegin(GL_LINES)
+    for edge in edges:
+        for vertex in edge:
+            glVertex3fv(vertices[vertex])
+    glEnd()
+ 
     return
 
 # TODO: Question 2
@@ -59,31 +106,67 @@ def draw_pyramid():
     # TODO: Construct the pyramid using an Indexed Triangles mesh representation
     # 5 vertices
     vertices = [
-
+        [-10.0,  0.0,  10.0],  # v0, front-left of base
+        [-10.0,  0.0, -10.0],  # v1, back-left of base
+        [ 10.0,  0.0, -10.0],  # v2, back-right of base
+        [ 10.0,  0.0,  10.0],  # v3, front-right of base
+        [  0.0, 20.0,   0.0],  # v4, apex
     ]
 
     # 6 triangles
     triangles = [
-
+        # Bottom face BLUE
+        [0, 1, 2],
+        [0, 2, 3],
+        # Front face YELLOW
+        [0, 3, 4],
+        # Right face GREEN
+        [3, 2, 4],
+        # Back face TURQUOISE
+        [2, 1, 4],
+        # Left face RED
+        [1, 0, 4],
     ]
 
     # 8 edges
     edges = [
-
+        # Base
+        [0, 1], [1, 2], [2, 3], [3, 0],
+        # Apex edges
+        [0, 4], [1, 4], [2, 4], [3, 4],
     ]
 
     # TODO: draw all the 6 triangles using GL_TRIANGLES
     # resotre the colors for all the faces in a list of tuples: [(r, g, b), (), ...]
     colors = [
-
+        (0.0, 0.0, 1.0),  # bottom triangle  blue
+        (0.0, 0.0, 1.0),  # bottom triangle  blue
+        (1.0, 1.0, 0.0),  # front yellow
+        (0.0, 1.0, 0.0),  # right green
+        (0.0, 1.0, 1.0),  # back  turquoise
+        (1.0, 0.0, 0.0),  # left  red
     ]
 
 
 
     # TODO: draw all the 8 edges in white with a line width of 5 using GL_LINES
-
-
-
+    tri_idx = 0
+    glBegin(GL_TRIANGLES)
+    for triangle in triangles:
+        glColor3fv(colors[tri_idx])
+        for vertex in triangle:
+            glVertex3fv(vertices[vertex])
+        tri_idx += 1  
+    glEnd()
+ 
+    # Draw the 8 edges in white with line width 5
+    glColor3f(1.0, 1.0, 1.0)
+    glLineWidth(5.0)
+    glBegin(GL_LINES)
+    for edge in edges:
+        for vertex in edge:
+            glVertex3fv(vertices[vertex])
+    glEnd()
 
     return
 
@@ -94,7 +177,7 @@ def draw():
     glCullFace(GL_BACK)                                                     # specify which face NOT drawing (culling)
     
     #TODO: write your code for Q1 inside draw_cube()
-    draw_cube()
+    #draw_cube()
 
     #TODO: write your code for Q2 inside draw_pyramid()
     draw_pyramid()
@@ -106,7 +189,7 @@ def main():
 
     screen = (width, height)                                                # specify the screen size of the new program window
     display_surface = pygame.display.set_mode(screen, DOUBLEBUF | OPENGL)   # create a display of size 'screen', use double-buffers and OpenGL
-    pygame.display.set_caption('CPSC 360 - YOUR NAME')                      # set title of the program window
+    pygame.display.set_caption('CPSC 360 - Jun Yi')                      # set title of the program window
 
     glEnable(GL_DEPTH_TEST)
     glViewport(0, 0, width, height)
